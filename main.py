@@ -187,12 +187,42 @@ def annotate_competitions(entries, references):
     return result
 
 
+# Presentation aliases only: matching and UID generation keep provider names.
+TEAM_DISPLAY_NAMES = {
+    "Inter Miami CF": "Inter Miami",
+    "New York City FC": "New York City",
+    "LASK Linz": "LASK",
+    "FC Barcelona": "Barcelona",
+    "Atlanta United FC": "Atlanta United",
+    "RC Strasbourg": "Strasbourg",
+    "Paris Saint-Germain": "PSG",
+    "Paris Saint Germain": "PSG",
+}
+COMPETITION_DISPLAY_NAMES = {
+    "Champions League": "Champions",
+    "Liga Colombia": "FPC",
+    "Liga Colombiana": "FPC",
+    "Copa Sudamericana": "Sudamericana",
+    "Copa Libertadores": "Libertadores",
+}
+
+
+def short_team_names(title):
+    for original, short in TEAM_DISPLAY_NAMES.items():
+        title = re.sub(r"(?<!\w)" + re.escape(original) + r"(?!\w)",
+                       lambda match: short, title, flags=re.IGNORECASE)
+    return title
+
+
 def display_title(item):
-    if item.get("group_identity") or not item.get("competition"):
-        return item["summary"]
-    title = re.sub(r"\s*\[[^]]+\]", "", item["summary"]).strip()
-    label = {"Copa Sudamericana": "Sudamericana", "Copa Libertadores": "Libertadores"}.get(
-        item["competition"], item["competition"])
+    competition = item.get("competition")
+    label = COMPETITION_DISPLAY_NAMES.get(competition, competition)
+    if item.get("group_identity"):
+        return label + " ×" + item["summary"].rsplit("×", 1)[1]
+    title = short_team_names(item["summary"])
+    if not competition:
+        return title
+    title = re.sub(r"\s*\[[^]]+\]", "", title).strip()
     return title + " · " + label
 
 
@@ -216,7 +246,7 @@ def group_simultaneous(entries, threshold=4):
                        "summary": f"{competition} ×{len(fixtures)}", "teams": None,
                        "competition": competition,
                        "group_identity": "group|" + competition + "|" + start.isoformat(),
-                       "description": "Partidos simultáneos:\n" + "\n".join(e["summary"] for e in fixtures),
+                       "description": "Partidos simultáneos:\n" + "\n".join(short_team_names(e["summary"]) for e in fixtures),
                        "source": "\n".join(sorted({e["source"] for e in fixtures}))})
     return sorted(result, key=lambda e: (e["start"], e["summary"]))
 

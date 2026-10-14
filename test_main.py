@@ -42,7 +42,7 @@ class CompetitionTitleTests(unittest.TestCase):
         fixture['summary'] = 'Atlético Mineiro - Torque [CS]'
         self.assertEqual(display_title(fixture), 'Atlético Mineiro - Torque · Sudamericana')
         group = group_simultaneous([self.fixture(n) for n in range(4)])[0]
-        self.assertEqual(display_title(group), 'Champions League ×4')
+        self.assertEqual(display_title(group), 'Champions ×4')
 
     def test_match_by_fixture_and_time_not_club(self):
         league = self.fixture(0, 'Liga Argentina')
@@ -60,6 +60,34 @@ class CompetitionTitleTests(unittest.TestCase):
         self.assertIsNone(result[0]['competition'])
         self.assertEqual(display_title(result[0]), unknown['summary'])
         self.assertIsNone(annotate_competitions([unknown], [self.fixture(1)])[0]['competition'])
+
+class ShortNameTests(unittest.TestCase):
+    fixture = CalendarTests.fixture
+
+    def test_requested_names_and_original_identity(self):
+        for original, short in [('Inter Miami CF', 'Inter Miami'),
+                                ('New York City FC', 'New York City'),
+                                ('LASK Linz', 'LASK'), ('FC Barcelona', 'Barcelona'),
+                                ('Atlanta United FC', 'Atlanta United'),
+                                ('RC Strasbourg', 'Strasbourg'),
+                                ('Paris Saint-Germain', 'PSG')]:
+            with self.subTest(team=original):
+                fixture = self.fixture(0)
+                fixture['summary'] = original + ' - Liverpool [CL]'
+                identity = fixture['teams']
+                self.assertEqual(display_title(fixture), short + ' - Liverpool · Champions')
+                self.assertEqual(fixture['summary'], original + ' - Liverpool [CL]')
+                self.assertEqual(fixture['teams'], identity)
+
+    def test_fpc_and_group_notes(self):
+        fixture = self.fixture(0, 'Liga Colombia')
+        self.assertTrue(display_title(fixture).endswith(' · FPC'))
+        entries = [self.fixture(n) for n in range(4)]
+        entries[0]['summary'] = 'FC Barcelona - Paris Saint-Germain [CL]'
+        group = group_simultaneous(entries)[0]
+        self.assertIn('Barcelona - PSG [CL]', group['description'])
+        self.assertEqual(display_title(group), 'Champions ×4')
+        self.assertEqual(group['group_identity'], 'group|Champions League|' + group['start'].isoformat())
 
 class IncompleteFixtureTests(unittest.TestCase):
     def test_provider_placeholders_are_excluded_before_grouping(self):
