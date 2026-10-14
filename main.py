@@ -4,7 +4,7 @@ import json
 import logging
 import re
 import unicodedata
-from collections import Counter
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -48,6 +48,7 @@ def teams(summary):
     pieces = re.split(r"\s+(?:vs\.?|v\.?|–|—|-)\s+", s, maxsplit=1, flags=re.IGNORECASE)
     if len(pieces) != 2:
         return None
+    pieces = [re.sub(r"\s*\[[^]]+\]", "", x) for x in pieces]
     a, b = [norm(x) for x in pieces]
     return (a, b) if a and b else None
 
@@ -92,7 +93,7 @@ def read_calendar_url(page_url):
             pass
     raise ValueError("Ningún enlace obtenido devolvió un calendario ICS: " + page_url)
 
-def get_entries(page_url):
+def get_entries(page_url, competition=None, only_team=None):
     calendar_url = read_calendar_url(page_url)
     response = SESSION.get(calendar_url, timeout=40)
     response.raise_for_status()
@@ -116,7 +117,9 @@ def get_entries(page_url):
             duration = end.astimezone(timezone.utc) - dt
         if duration <= timedelta(0) or duration > timedelta(hours=5):
             duration = timedelta(hours=2)
-        entries.append({"start": dt, "end": dt + duration, "summary": title, "teams": teams(title), "description": str(component.get("DESCRIPTION", "")), "source": page_url})
+        if only_team and norm(only_team) not in (teams(title) or ()):
+            continue
+        entries.append({"competition": competition, "start": dt, "end": dt + duration, "summary": title, "teams": teams(title), "description": str(component.get("DESCRIPTION", "")), "source": page_url})
     LOG.info("%s: %s partidos", page_url, len(entries))
     return entries
 
@@ -126,7 +129,7 @@ def merge(entries):
     team_index = {}
     title_index = set()
     duplicates = 0
-    for entry in sorted(entries, key=lambda e: (e["start"], e["summary"])):
+    for entry in sorted(entries, key=lambda e: (not bool(e.get("competition")), e["start"], e["summary"])):
         matchup = entry["teams"]
         key_title = (norm(entry["summary"]), entry["start"])
         matched = key_title in title_index
@@ -143,6 +146,8 @@ def merge(entries):
                 if matched:
                     break
         if matched:
+            # Competition feeds are processed first at equal kickoffs. Preserve
+            # their explicit identity when a team feed repeats the fixture.
             duplicates += 1
             continue
         unique.append(entry)
@@ -153,14 +158,49 @@ def merge(entries):
             team_index.setdefault((pair, minute_bucket), []).append(entry)
     return unique, duplicates
 
+def group_simultaneous(entries, threshold=4):
+    """Collapse only known competitions with exactly equal UTC kickoffs."""
+    if threshold < 4:
+        raise ValueError("El umbral mínimo es 4")
+    buckets = defaultdict(list)
+    result = []
+    for entry in entries:
+        if entry.get("competition"):
+            buckets[(entry["competition"], entry["start"])].append(entry)
+        else:
+            result.append(entry)
+    for (competition, start), fixtures in buckets.items():
+        if len(fixtures) < threshold:
+            result.extend(fixtures)
+            continue
+        fixtures = sorted(fixtures, key=lambda e: e["summary"])
+        result.append({"start": start, "end": max(e["end"] for e in fixtures),
+                       "summary": f"{competition} ×{len(fixtures)}", "teams": None,
+                       "competition": competition,
+                       "group_identity": "group|" + competition + "|" + start.isoformat(),
+                       "description": "Partidos simultáneos:\n" + "\n".join(e["summary"] for e in fixtures),
+                       "source": "\n".join(sorted({e["source"] for e in fixtures}))})
+    return sorted(result, key=lambda e: (e["start"], e["summary"]))
+
 def build():
     sources = json.loads(Path("sources.json").read_text(encoding="utf-8"))
-    urls = [sources["premier_league"], sources["champions_league"]]
-    urls += [f"https://fixtur.es/es/team/{slug}" for slug in sources["teams"]]
+    feeds = sources["feeds"]
+    urls = [f["url"] for f in feeds]
     all_entries, failures = [], []
-    for u in urls:
+    for feed in feeds:
+        u = feed["url"]
         try:
-            all_entries.extend(get_entries(u))
+            entries = get_entries(u, feed.get("competition"), feed.get("only_team"))
+            if feed.get("allowed_opponents_source"):
+                reference = get_entries(feed["allowed_opponents_source"])
+                allowed = {t for e in reference for t in (e["teams"] or ())}
+                entries = [e for e in entries if e["teams"] and all(t in allowed for t in e["teams"])]
+            region = feed.get("region")
+            if region:
+                region_teams = {norm(t) for t in sources[region + "_teams"]}
+                entries = [e for e in entries if e["teams"] and
+                           all(t in region_teams for t in e["teams"])]
+            all_entries.extend(entries)
         except (requests.RequestException, ValueError, KeyError) as e:
             failures.append((u, str(e)))
             LOG.warning("Fuente no disponible %s: %s", u, e)
@@ -181,6 +221,8 @@ def build():
         raise RuntimeError("No hay partidos recientes o futuros en los feeds")
     chosen, duplicates = merge(all_entries)
     LOG.info("Deduplicados: %s partidos únicos, %s duplicados", len(chosen), duplicates)
+    fixture_count = len(chosen)
+    chosen = group_simultaneous(chosen, sources.get("group_threshold", 4))
     cal = Calendar()
     cal.add("prodid", "-//Matchday Personal Calendar//ES")
     cal.add("version", "2.0")
@@ -191,7 +233,7 @@ def build():
         ev = Event()
         # Stable ID for updates; avoid changing UID when the title is revised.
         matchup = item["teams"]
-        identity = "|".join(sorted(matchup)) if matchup else norm(item["summary"])
+        identity = item.get("group_identity") or ("|".join(sorted(matchup)) if matchup else norm(item["summary"]))
         # Stable over minor kickoff changes; a same-day reschedule retains its UID.
         key = identity + "|" + item["start"].strftime("%Y-%m-%d")
         uid = hashlib.sha256(key.encode()).hexdigest()[:25] + "@matchday"
@@ -204,13 +246,13 @@ def build():
         ev.add("dtstart", item["start"])
         ev.add("dtend", item["end"])
         ev.add("dtstamp", now)
-        ev.add("description", "Fuente de calendario: " + item["source"])
+        ev.add("description", item.get("description", "") + "\nFuente de calendario: " + item["source"])
         ev.add("transp", "TRANSPARENT")
         cal.add_component(ev)
     Path("public").mkdir(exist_ok=True)
     Path("public/matchday.ics").write_bytes(cal.to_ical())
     Path("public/index.html").write_text('<!doctype html><meta charset="utf-8"><title>Matchday</title><h1>⚽ Matchday</h1><p><a href="matchday.ics">Calendario para Apple Calendar</a></p>', encoding="utf-8")
-    Path("public/status.json").write_text(json.dumps({"updated_utc": now.isoformat(), "sources": len(urls), "events": len(chosen), "duplicates_removed": duplicates}, indent=2), encoding="utf-8")
+    Path("public/status.json").write_text(json.dumps({"updated_utc": now.isoformat(), "sources": len(urls), "events": len(chosen), "fixtures": fixture_count, "groups": sum(bool(e.get("group_identity")) for e in chosen), "duplicates_removed": duplicates}, indent=2), encoding="utf-8")
     LOG.info("Hecho: %s partidos, %s duplicados eliminados", len(chosen), duplicates)
 
 if __name__ == "__main__":

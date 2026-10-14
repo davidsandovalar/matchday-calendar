@@ -1,10 +1,183 @@
 {
-  "premier_league": "https://fixtur.es/en/matches/premier-league",
-  "champions_league": "https://fixtur.es/en/champions-league",
-  "teams": [
-    "real-madrid", "fc-barcelona", "atletico-madrid", "real-betis-sevilla",
-    "benfica", "sporting-portugal", "paris-saint-germain", "napoli", "ac-milan",
-    "juventus", "inter", "as-roma", "como", "bayern-munchen", "borussia-dortmund",
-    "millonarios", "santa-fe", "boca-juniors", "river-plate", "palmeiras-sao-paulo", "vasco-da-gama"
+  "group_threshold": 4,
+  "south_america_teams": [
+    "Argentina",
+    "Bolivia",
+    "Brazil",
+    "Chile",
+    "Colombia",
+    "Ecuador",
+    "Paraguay",
+    "Peru",
+    "Uruguay",
+    "Venezuela"
+  ],
+  "feeds": [
+    {
+      "url": "https://ics.fixtur.es/v2/league/premier-league.ics",
+      "competition": "Premier League"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/champions-league.ics",
+      "competition": "Champions League"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-libertadores.ics",
+      "competition": "Copa Libertadores"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-sudamericana.ics",
+      "competition": "Copa Sudamericana"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-america.ics",
+      "competition": "Copa América"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/fifa-world-cup-2026.ics",
+      "competition": "Mundial de fútbol"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/uefa-euro-2024-germany.ics",
+      "competition": "Eurocopa"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/world-cup-qualifiers.ics",
+      "competition": "Eliminatorias europeas del Mundial",
+      "region": "europe"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/world-cup-qualifiers.ics",
+      "competition": "Eliminatorias sudamericanas del Mundial",
+      "region": "south_america"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/river-plate.ics",
+      "only_team": "River Plate",
+      "allowed_opponents_source": "https://ics.fixtur.es/v2/league/primera-division-argentina.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/real-madrid.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/fc-barcelona.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/atletico-madrid.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/real-betis-sevilla.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/benfica.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/sporting-portugal.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/paris-saint-germain.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/napoli.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ac-milan.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/juventus.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/inter.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/as-roma.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/como.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/bayern-munchen.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/borussia-dortmund.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/millonarios.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/santa-fe.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/boca-juniors.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/palmeiras-sao-paulo.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/vasco-da-gama.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/inter-miami-cf.ics"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/co.ics"
+    }
+  ],
+  "europe_teams": [
+    "Albania",
+    "Andorra",
+    "Armenia",
+    "Austria",
+    "Azerbaijan",
+    "Belarus",
+    "Belgium",
+    "Bosnia and Herzegovina",
+    "Bulgaria",
+    "Croatia",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "England",
+    "Estonia",
+    "Faroe Islands",
+    "Finland",
+    "France",
+    "Georgia",
+    "Germany",
+    "Gibraltar",
+    "Greece",
+    "Hungary",
+    "Iceland",
+    "Ireland",
+    "Israel",
+    "Italy",
+    "Kazakhstan",
+    "Kosovo",
+    "Latvia",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "Malta",
+    "Moldova",
+    "Montenegro",
+    "Netherlands",
+    "North Macedonia",
+    "Northern Ireland",
+    "Norway",
+    "Poland",
+    "Portugal",
+    "Romania",
+    "Russia",
+    "San Marino",
+    "Scotland",
+    "Serbia",
+    "Slovakia",
+    "Slovenia",
+    "Spain",
+    "Sweden",
+    "Switzerland",
+    "Türkiye",
+    "Ukraine",
+    "Wales"
   ]
 }
