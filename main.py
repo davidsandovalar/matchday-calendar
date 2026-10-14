@@ -158,6 +158,38 @@ def merge(entries):
             team_index.setdefault((pair, minute_bucket), []).append(entry)
     return unique, duplicates
 
+def annotate_competitions(entries, references):
+    """Match actual fixtures, never infer a tournament from club nationality."""
+    index = defaultdict(list)
+    for entry in references:
+        if entry["teams"] and entry.get("competition"):
+            pair = tuple(sorted(entry["teams"]))
+            bucket = int(entry["start"].timestamp() // 1800)
+            index[(pair, bucket)].append(entry)
+    result = []
+    for entry in entries:
+        entry = dict(entry)
+        if not entry.get("competition") and entry["teams"]:
+            pair = tuple(sorted(entry["teams"]))
+            bucket = int(entry["start"].timestamp() // 1800)
+            matches = {ref["competition"] for b in (bucket - 1, bucket, bucket + 1)
+                       for ref in index.get((pair, b), ())
+                       if abs((ref["start"] - entry["start"]).total_seconds()) <= 1800}
+            if len(matches) == 1:
+                entry["competition"] = matches.pop()
+        result.append(entry)
+    return result
+
+
+def display_title(item):
+    if item.get("group_identity") or not item.get("competition"):
+        return item["summary"]
+    title = re.sub(r"\s*\[[^]]+\]", "", item["summary"]).strip()
+    label = {"Copa Sudamericana": "Sudamericana", "Copa Libertadores": "Libertadores"}.get(
+        item["competition"], item["competition"])
+    return title + " · " + label
+
+
 def group_simultaneous(entries, threshold=4):
     """Collapse only known competitions with exactly equal UTC kickoffs."""
     if threshold < 4:
@@ -187,6 +219,7 @@ def build():
     feeds = sources["feeds"]
     urls = [f["url"] for f in feeds]
     all_entries, failures = [], []
+    references = []
     for feed in feeds:
         u = feed["url"]
         try:
@@ -204,6 +237,12 @@ def build():
         except (requests.RequestException, ValueError, KeyError) as e:
             failures.append((u, str(e)))
             LOG.warning("Fuente no disponible %s: %s", u, e)
+    for feed in sources.get("competition_references", []):
+        try:
+            references.extend(get_entries(feed["url"], feed["competition"]))
+        except (requests.RequestException, ValueError, KeyError) as e:
+            failures.append((feed["url"], str(e)))
+            LOG.warning("Referencia no disponible %s: %s", feed["url"], e)
     if failures:
         LOG.error("%s/%s fuentes fallaron", len(failures), len(urls))
         # Do not publish incomplete feeds as complete; retains last deployed feed.
@@ -219,6 +258,7 @@ def build():
     all_entries = [e for e in all_entries if window_start <= e["start"] <= window_end]
     if not all_entries:
         raise RuntimeError("No hay partidos recientes o futuros en los feeds")
+    all_entries = annotate_competitions(all_entries, references)
     chosen, duplicates = merge(all_entries)
     LOG.info("Deduplicados: %s partidos únicos, %s duplicados", len(chosen), duplicates)
     fixture_count = len(chosen)
@@ -242,11 +282,14 @@ def build():
             uid = hashlib.sha256((key + "|" + item["start"].isoformat()).encode()).hexdigest()[:25] + "@matchday"
         seen_uids.add(uid)
         ev.add("uid", uid)
-        ev.add("summary", "⚽ " + item["summary"])
+        ev.add("summary", "⚽ " + display_title(item))
         ev.add("dtstart", item["start"])
         ev.add("dtend", item["end"])
         ev.add("dtstamp", now)
-        ev.add("description", item.get("description", "") + "\nFuente de calendario: " + item["source"])
+        description = item.get("description", "")
+        if not item.get("competition"):
+            description = "Torneo sin confirmar en las fuentes disponibles.\n" + description
+        ev.add("description", description + "\nFuente de calendario: " + item["source"])
         ev.add("transp", "TRANSPARENT")
         cal.add_component(ev)
     Path("public").mkdir(exist_ok=True)

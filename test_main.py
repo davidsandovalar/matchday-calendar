@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timedelta, timezone
-from main import teams, merge, group_simultaneous
+from main import teams, merge, group_simultaneous, annotate_competitions, display_title
 
 class CalendarTests(unittest.TestCase):
     def fixture(self, n, competition='Champions League', hour=19):
@@ -32,5 +32,31 @@ class CalendarTests(unittest.TestCase):
         result,count=merge([duplicate,a])
         self.assertEqual(count,1)
         self.assertEqual(result[0]['competition'],'Champions League')
+
+class CompetitionTitleTests(unittest.TestCase):
+    fixture = CalendarTests.fixture
+    def test_readable_title_and_group_unchanged(self):
+        fixture = self.fixture(0, 'Copa Sudamericana')
+        fixture['summary'] = 'Atlético Mineiro - Torque [CS]'
+        self.assertEqual(display_title(fixture), 'Atlético Mineiro - Torque · Sudamericana')
+        group = group_simultaneous([self.fixture(n) for n in range(4)])[0]
+        self.assertEqual(display_title(group), 'Champions League ×4')
+
+    def test_match_by_fixture_and_time_not_club(self):
+        league = self.fixture(0, 'Liga Argentina')
+        cup = self.fixture(0, 'Copa Argentina', hour=22)
+        unknown = self.fixture(0, None, hour=22)
+        result = annotate_competitions([unknown], [league, cup])
+        self.assertEqual(result[0]['competition'], 'Copa Argentina')
+        self.assertIsNone(unknown['competition'])
+        self.assertEqual(result[0]['teams'], unknown['teams'])
+        self.assertEqual(result[0]['summary'], unknown['summary'])
+
+    def test_unknown_or_ambiguous_not_guessed(self):
+        unknown = self.fixture(0, None)
+        result = annotate_competitions([unknown], [self.fixture(0, 'League'), self.fixture(0, 'Cup')])
+        self.assertIsNone(result[0]['competition'])
+        self.assertEqual(display_title(result[0]), unknown['summary'])
+        self.assertIsNone(annotate_competitions([unknown], [self.fixture(1)])[0]['competition'])
 
 if __name__=='__main__':unittest.main()

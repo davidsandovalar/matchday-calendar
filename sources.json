@@ -179,5 +179,99 @@
     "Türkiye",
     "Ukraine",
     "Wales"
+  ],
+  "competition_references": [
+    {
+      "url": "https://ics.fixtur.es/v2/league/primera-division.ics",
+      "competition": "LaLiga"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/primera-division-argentina.ics",
+      "competition": "Liga Argentina"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/primera-a.ics",
+      "competition": "Liga Colombia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/serie-a.ics",
+      "competition": "Serie A"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/serie-a-brazil.ics",
+      "competition": "Brasileirão"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/bundesliga.ics",
+      "competition": "Bundesliga"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/ligue-1.ics",
+      "competition": "Ligue 1"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/mls-major-league-soccer.ics",
+      "competition": "MLS"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/superliga.ics",
+      "competition": "Liga Portugal"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-argentina.ics",
+      "competition": "Copa Argentina"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-colombia.ics",
+      "competition": "Copa Colombia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-do-brasil.ics",
+      "competition": "Copa de Brasil"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/copa-del-rey.ics",
+      "competition": "Copa del Rey"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/coppa-italia.ics",
+      "competition": "Copa Italia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/dfb-pokal.ics",
+      "competition": "Copa de Alemania"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/coupe-de-france.ics",
+      "competition": "Copa de Francia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/taca-de-portugal.ics",
+      "competition": "Copa de Portugal"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/leagues-cup.ics",
+      "competition": "Leagues Cup"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/concacaf-champions-league.ics",
+      "competition": "Concacaf Champions Cup"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/oefen-interlands.ics",
+      "competition": "Amistoso de selecciones"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/club-friendlies.ics",
+      "competition": "Amistoso de clubes"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/europa-league.ics",
+      "competition": "Europa League"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/supercopa-de-espana.ics",
+      "competition": "Supercopa de España"
+    }
   ]
 }

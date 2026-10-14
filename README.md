@@ -29,3 +29,7 @@ python main.py
 El generador escribe `public/matchday.ics`, `public/status.json` y una página con el enlace de suscripción. El estado muestra partidos únicos, eventos visibles, grupos y duplicados eliminados. GitHub Actions ejecuta las pruebas antes de generar y publicar en Pages. La configuración de Pages debe usar GitHub Actions.
 
 Si alguna fuente falla, no se publica un calendario incompleto y se conserva la versión anterior. La deduplicación compara equipos normalizados y horarios con tolerancia de 30 minutos. Puede requerir alias adicionales cuando el proveedor cambie nombres. Solo se incluyen partidos desde 30 días atrás hasta 550 días adelante.
+
+## Nombre del torneo en cada partido
+
+Los eventos individuales muestran `⚽ Sarmiento - River Plate · Liga Argentina` o `⚽ Atlético Mineiro - Torque · Sudamericana`. Los grupos mantienen su título. Las fuentes de `competition_references` sirven únicamente para identificar encuentros ya seguidos, sin añadir todos los partidos de esas ligas o copas. Se cruzan equipos y horario (hasta 30 minutos); no se deduce la competición por el país del club. Si la fuente no permite identificarla o hay resultados contradictorios, se conserva el título original y se indica en las notas que el torneo no está confirmado. Los identificadores individuales no cambian al añadir la etiqueta.
