@@ -189,6 +189,21 @@ def annotate_competitions(entries, references):
 
 # Presentation aliases only: matching and UID generation keep provider names.
 TEAM_DISPLAY_NAMES = {
+    "AC Milan": "Milan",
+    "Boca Juniors": "Boca",
+    "Talleres Córdoba": "Talleres", "Talleres Cordoba": "Talleres",
+    "Atlético Madrid": "Atlético", "Atletico Madrid": "Atlético",
+    "Atlético de Madrid": "Atlético",
+    "1. FC Union Berlin": "Union Berlin", "1. FC Union Berlín": "Union Berlín",
+    "Borussia Dortmund": "Dortmund",
+    "Bayern München": "Bayern", "Bayern Munchen": "Bayern",
+    "Bayern Munich": "Bayern", "Bayern Múnich": "Bayern",
+    "RB Leipzig": "Leipzig", "FC Genoa": "Genoa",
+    "AS Roma": "Roma", "SS Lazio": "Lazio", "SS. Lazio": "Lazio",
+    "Sevilla FC": "Sevilla", "CA Belgrano": "Belgrano",
+    "River Plate": "River", "Millonarios": "Millos",
+    "SK Slavia Praha": "Slavia Praha", "SK Slavia Prague": "Slavia Prague",
+    "SK Slavia Praga": "Slavia Praga",
     "Inter Miami CF": "Inter Miami",
     "New York City FC": "New York City",
     "LASK Linz": "LASK",
@@ -198,8 +213,22 @@ TEAM_DISPLAY_NAMES = {
     "Paris Saint-Germain": "PSG",
     "Paris Saint Germain": "PSG",
 }
+PREMIER_DISPLAY_NAMES = {
+    "Arsenal": "ARS", "Aston Villa": "AVL",
+    "AFC Bournemouth": "BOU", "Bournemouth": "BOU",
+    "Brentford FC": "BRE", "Brentford": "BRE",
+    "Brighton & Hove Albion FC": "BRI", "Brighton & Hove Albion": "BRI",
+    "Brighton and Hove Albion": "BRI", "Chelsea": "CHE",
+    "Crystal Palace": "CRY", "Everton": "EVE", "Fulham": "FUL",
+    "Liverpool": "LIV", "Manchester City": "MCI", "Manchester United": "MUN",
+    "Newcastle United": "NEW", "Nottingham Forest": "NFO",
+    "Tottenham Hotspur": "TOT", "Coventry City": "COV", "Hull City": "HUL",
+    "Leeds United": "LEE", "Ipswich Town": "IPS", "Ipswitch Town": "IPS",
+    "Sunderland": "SUN",
+}
 COMPETITION_DISPLAY_NAMES = {
     "Champions League": "Champions",
+    "Premier League": "Premier",
     "Liga Colombia": "FPC",
     "Liga Colombiana": "FPC",
     "Copa Sudamericana": "Sudamericana",
@@ -207,11 +236,16 @@ COMPETITION_DISPLAY_NAMES = {
 }
 
 
-def short_team_names(title):
-    for original, short in TEAM_DISPLAY_NAMES.items():
-        title = re.sub(r"(?<!\w)" + re.escape(original) + r"(?!\w)",
-                       lambda match: short, title, flags=re.IGNORECASE)
-    return title
+def short_team_names(title, competition=None):
+    names = dict(TEAM_DISPLAY_NAMES)
+    if competition == "Premier League":
+        names.update(PREMIER_DISPLAY_NAMES)
+    # One pass, longest names first: avoid turning "Brentford FC" into "BRE FC".
+    pattern = r"(?<!\w)(?:" + "|".join(
+        re.escape(name) for name in sorted(names, key=len, reverse=True)) + r")(?!\w)"
+    lookup = {name.casefold(): short for name, short in names.items()}
+    return re.sub(pattern, lambda match: lookup[match.group().casefold()], title,
+                  flags=re.IGNORECASE)
 
 
 def display_title(item):
@@ -219,7 +253,7 @@ def display_title(item):
     label = COMPETITION_DISPLAY_NAMES.get(competition, competition)
     if item.get("group_identity"):
         return label + " ×" + item["summary"].rsplit("×", 1)[1]
-    title = short_team_names(item["summary"])
+    title = short_team_names(item["summary"], competition)
     if not competition:
         return title
     title = re.sub(r"\s*\[[^]]+\]", "", title).strip()
@@ -246,7 +280,7 @@ def group_simultaneous(entries, threshold=4):
                        "summary": f"{competition} ×{len(fixtures)}", "teams": None,
                        "competition": competition,
                        "group_identity": "group|" + competition + "|" + start.isoformat(),
-                       "description": "Partidos simultáneos:\n" + "\n".join(short_team_names(e["summary"]) for e in fixtures),
+                       "description": "Partidos simultáneos:\n" + "\n".join(short_team_names(e["summary"], competition) for e in fixtures),
                        "source": "\n".join(sorted({e["source"] for e in fixtures}))})
     return sorted(result, key=lambda e: (e["start"], e["summary"]))
 

@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, Mock
 from icalendar import Calendar, Event
 from datetime import datetime, timedelta, timezone
-from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries
+from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries, short_team_names, PREMIER_DISPLAY_NAMES
 
 class CalendarTests(unittest.TestCase):
     def fixture(self, n, competition='Champions League', hour=19):
@@ -88,6 +88,41 @@ class ShortNameTests(unittest.TestCase):
         self.assertIn('Barcelona - PSG [CL]', group['description'])
         self.assertEqual(display_title(group), 'Champions ×4')
         self.assertEqual(group['group_identity'], 'group|Champions League|' + group['start'].isoformat())
+
+class ExtendedNameTests(unittest.TestCase):
+    fixture = CalendarTests.fixture
+
+    def test_english_abbreviations_only_in_premier(self):
+        for original, abbreviation in PREMIER_DISPLAY_NAMES.items():
+            with self.subTest(team=original):
+                self.assertEqual(short_team_names(original, 'Premier League'), abbreviation)
+                for competition in ['Champions League', 'Europa League', 'Copa del Rey', None]:
+                    self.assertEqual(short_team_names(original, competition), original)
+        item = self.fixture(0, 'Premier League')
+        item['summary'] = 'Manchester City - Brighton & Hove Albion FC'
+        self.assertEqual(display_title(item), 'MCI - BRI · Premier')
+
+    def test_global_short_names(self):
+        for original, short in [('AC Milan', 'Milan'), ('Boca Juniors', 'Boca'),
+                                ('Talleres Córdoba', 'Talleres'), ('Atlético Madrid', 'Atlético'),
+                                ('1. FC Union Berlin', 'Union Berlin'), ('Borussia Dortmund', 'Dortmund'),
+                                ('Bayern München', 'Bayern'), ('RB Leipzig', 'Leipzig'),
+                                ('FC Genoa', 'Genoa'), ('AS Roma', 'Roma'), ('SS Lazio', 'Lazio'),
+                                ('Sevilla FC', 'Sevilla'), ('CA Belgrano', 'Belgrano'),
+                                ('River Plate', 'River'), ('Millonarios', 'Millos'),
+                                ('SK Slavia Praha', 'Slavia Praha')]:
+            with self.subTest(team=original):
+                self.assertEqual(short_team_names(original, 'Champions League'), short)
+
+    def test_group_notes_use_competition_and_keep_identity(self):
+        for competition, expected in [('Premier League', 'MCI - LIV'),
+                                      ('Champions League', 'Manchester City - Liverpool')]:
+            entries = [self.fixture(n, competition) for n in range(4)]
+            entries[0]['summary'] = 'Manchester City - Liverpool'
+            group = group_simultaneous(entries)[0]
+            self.assertIn(expected, group['description'])
+            self.assertIn(competition, group['group_identity'])
+            self.assertEqual(entries[0]['summary'], 'Manchester City - Liverpool')
 
 class IncompleteFixtureTests(unittest.TestCase):
     def test_provider_placeholders_are_excluded_before_grouping(self):
