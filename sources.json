@@ -1,0 +1,10 @@
+{
+  "premier_league": "https://fixtur.es/en/matches/premier-league",
+  "champions_league": "https://fixtur.es/en/champions-league",
+  "teams": [
+    "real-madrid", "fc-barcelona", "atletico-madrid", "real-betis-sevilla",
+    "benfica", "sporting-portugal", "paris-saint-germain", "napoli", "ac-milan",
+    "juventus", "inter", "as-roma", "como", "bayern-munchen", "borussia-dortmund",
+    "millonarios", "santa-fe", "boca-juniors", "river-plate", "palmeiras-sao-paulo", "vasco-da-gama"
+  ]
+}
