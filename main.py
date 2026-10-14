@@ -121,30 +121,36 @@ def get_entries(page_url):
     return entries
 
 def merge(entries):
-    """Conservative matching by teams AND start time, preserving ambiguous fixtures."""
+    """Deduplicate fixtures in near-linear time with 30-minute kickoff tolerance."""
     unique = []
-    seen_uids = set()
+    team_index = {}
+    title_index = set()
     duplicates = 0
     for entry in sorted(entries, key=lambda e: (e["start"], e["summary"])):
         matchup = entry["teams"]
-        match = None
-        if matchup:
-            for old in unique:
-                if old["teams"] and set(old["teams"]) == set(matchup) and abs((entry["start"] - old["start"]).total_seconds()) <= 30 * 60:
-                    # Same two sides within 30 minutes; not safe to merge date-only fixtures.
-                    match = old
+        key_title = (norm(entry["summary"]), entry["start"])
+        matched = key_title in title_index
+        if matchup and not matched:
+            pair = tuple(sorted(matchup))
+            # Check only kickoffs of the same teams, within the time window.
+            # The bucket index is maintained in UTC to avoid timezone issues.
+            minute_bucket = int(entry["start"].timestamp() // 1800)
+            for bucket in (minute_bucket - 1, minute_bucket, minute_bucket + 1):
+                for old in team_index.get((pair, bucket), ()):
+                    if abs((entry["start"] - old["start"]).total_seconds()) <= 1800:
+                        matched = True
+                        break
+                if matched:
                     break
-        if match is None:
-            # Identical title and exact time, even if team extraction failed.
-            for old in unique:
-                if norm(old["summary"]) == norm(entry["summary"]) and old["start"] == entry["start"]:
-                    match = old
-                    break
-        if match is not None:
+        if matched:
             duplicates += 1
-            # Prefer the event already present; sources ordered competition-wide first.
             continue
         unique.append(entry)
+        title_index.add(key_title)
+        if matchup:
+            pair = tuple(sorted(matchup))
+            minute_bucket = int(entry["start"].timestamp() // 1800)
+            team_index.setdefault((pair, minute_bucket), []).append(entry)
     return unique, duplicates
 
 def build():
@@ -164,13 +170,23 @@ def build():
         raise RuntimeError("No se publica un calendario incompleto. Fuentes fallidas: " + ", ".join(url for url, _ in failures))
     if len(all_entries) < 100:
         raise RuntimeError("Se recuperaron muy pocos eventos. No publicar calendario incompleto.")
+    LOG.info("Comienza deduplicación de %s eventos", len(all_entries))
+    # Limit calendar to a useful rolling window; reduces outdated history and
+    # processing time. Keep recent fixtures for context, plus 18 months ahead.
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(days=30)
+    window_end = now + timedelta(days=550)
+    all_entries = [e for e in all_entries if window_start <= e["start"] <= window_end]
+    if not all_entries:
+        raise RuntimeError("No hay partidos recientes o futuros en los feeds")
     chosen, duplicates = merge(all_entries)
+    LOG.info("Deduplicados: %s partidos únicos, %s duplicados", len(chosen), duplicates)
     cal = Calendar()
     cal.add("prodid", "-//Matchday Personal Calendar//ES")
     cal.add("version", "2.0")
     cal.add("x-wr-calname", "⚽ Matchday")
     cal.add("x-wr-timezone", "America/Bogota")
-    now = datetime.now(timezone.utc)
+    seen_uids = set()
     for item in chosen:
         ev = Event()
         # Stable ID for updates; avoid changing UID when the title is revised.
