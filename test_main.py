@@ -1,6 +1,8 @@
 import unittest
+from unittest.mock import patch, Mock
+from icalendar import Calendar, Event
 from datetime import datetime, timedelta, timezone
-from main import teams, merge, group_simultaneous, annotate_competitions, display_title
+from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries
 
 class CalendarTests(unittest.TestCase):
     def fixture(self, n, competition='Champions League', hour=19):
@@ -58,5 +60,22 @@ class CompetitionTitleTests(unittest.TestCase):
         self.assertIsNone(result[0]['competition'])
         self.assertEqual(display_title(result[0]), unknown['summary'])
         self.assertIsNone(annotate_competitions([unknown], [self.fixture(1)])[0]['competition'])
+
+class IncompleteFixtureTests(unittest.TestCase):
+    def test_provider_placeholders_are_excluded_before_grouping(self):
+        cal = Calendar()
+        for title in ['... - ... [CL]', 'Finals', 'TBD - River Plate',
+                      'Sarmiento - ...', 'Sarmiento - River Plate']:
+            event = Event()
+            event.add('summary', title)
+            event.add('dtstart', datetime(2026, 10, 14, 18, tzinfo=timezone.utc))
+            cal.add_component(event)
+        response = Mock(content=cal.to_ical())
+        with patch('main.read_calendar_url', return_value='https://example.test/feed.ics'), \
+             patch('main.SESSION.get', return_value=response):
+            entries = get_entries('https://example.test/feed.ics', 'Libertadores')
+        self.assertEqual([e['summary'] for e in entries], ['Sarmiento - River Plate'])
+        self.assertEqual(len(group_simultaneous(entries)), 1)
+        self.assertNotIn('group_identity', group_simultaneous(entries)[0])
 
 if __name__=='__main__':unittest.main()

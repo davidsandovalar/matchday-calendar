@@ -111,15 +111,21 @@ def get_entries(page_url, competition=None, only_team=None):
         title = str(component.get("SUMMARY", "")).strip()
         if not title:
             continue
+        matchup = teams(title)
+        # Provider feeds include timed stage markers and unresolved fixtures.
+        # Publish only matches with two identifiable teams.
+        placeholders = {"tbd", "tbc", "unknown", "to be determined", "to be confirmed"}
+        if not matchup or any(team in placeholders for team in matchup):
+            continue
         end = component.decoded("DTEND", None)
         duration = timedelta(hours=2)
         if isinstance(end, datetime):
             duration = end.astimezone(timezone.utc) - dt
         if duration <= timedelta(0) or duration > timedelta(hours=5):
             duration = timedelta(hours=2)
-        if only_team and norm(only_team) not in (teams(title) or ()):
+        if only_team and norm(only_team) not in matchup:
             continue
-        entries.append({"competition": competition, "start": dt, "end": dt + duration, "summary": title, "teams": teams(title), "description": str(component.get("DESCRIPTION", "")), "source": page_url})
+        entries.append({"competition": competition, "start": dt, "end": dt + duration, "summary": title, "teams": matchup, "description": str(component.get("DESCRIPTION", "")), "source": page_url})
     LOG.info("%s: %s partidos", page_url, len(entries))
     return entries
 

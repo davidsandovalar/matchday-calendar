@@ -33,3 +33,5 @@ Si alguna fuente falla, no se publica un calendario incompleto y se conserva la 
 ## Nombre del torneo en cada partido
 
 Los eventos individuales muestran `⚽ Sarmiento - River Plate · Liga Argentina` o `⚽ Atlético Mineiro - Torque · Sudamericana`. Los grupos mantienen su título. Las fuentes de `competition_references` sirven únicamente para identificar encuentros ya seguidos, sin añadir todos los partidos de esas ligas o copas. Se cruzan equipos y horario (hasta 30 minutos); no se deduce la competición por el país del club. Si la fuente no permite identificarla o hay resultados contradictorios, se conserva el título original y se indica en las notas que el torneo no está confirmado. Los identificadores individuales no cambian al añadir la etiqueta.
+
+Se excluyen marcadores de fase y partidos sin dos equipos identificados (por ejemplo, `... - ...` o `TBD - River Plate`) antes de deduplicar y agrupar. Cuando la fuente publique los nombres reales, el partido entrará automáticamente.
