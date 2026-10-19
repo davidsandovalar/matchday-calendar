@@ -261,7 +261,7 @@ def short_team_names(title, competition=None):
     if competition == "Premier League":
         names.update(PREMIER_DISPLAY_NAMES)
     else:
-        names["Manchester United"] = "Man. UD"
+        names["Manchester United"] = "Man. Ud"
     european = competition in {"Champions League", "Europa League", "UEFA Conference League", "Conference League"}
     if european:
         names["AFC Bournemouth"] = "Bournemouth"

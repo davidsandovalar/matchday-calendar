@@ -42,4 +42,4 @@ Las siglas inglesas de `PREMIER_DISPLAY_NAMES` (ARS, AVL, BOU, BRE, BRI, CHE, CR
 
 Las descargas GET reintentan hasta tres veces los cortes de conexión y las respuestas temporales 429/500/502/503/504, con espera progresiva. Un fallo persistente sigue bloqueando la publicación para conservar el calendario completo anterior; los errores permanentes como 404 no se reintentan.
 
-Alias adicionales: Lazio sin SS, Mineiro, Sassuolo sin U.S., Friburgo sin SC, Lyon y Racing. Manchester United se muestra como Man. UD fuera de Premier (en Premier sigue MUN); Bournemouth pierde AFC en torneos europeos (en Premier sigue BOU); Deportivo pierde RC solo en LaLiga; Frankfurt pierde Eintracht en Bundesliga y torneos europeos; Betis pierde Real en LaLiga y torneos europeos.
+Alias adicionales: Lazio sin SS, Mineiro, Sassuolo sin U.S., Friburgo sin SC, Lyon y Racing. Manchester United se muestra como Man. Ud fuera de Premier (en Premier sigue MUN); Bournemouth pierde AFC en torneos europeos (en Premier sigue BOU); Deportivo pierde RC solo en LaLiga; Frankfurt pierde Eintracht en Bundesliga y torneos europeos; Betis pierde Real en LaLiga y torneos europeos.

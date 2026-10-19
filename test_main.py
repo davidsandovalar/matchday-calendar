@@ -101,7 +101,7 @@ class ExtendedNameTests(unittest.TestCase):
             with self.subTest(team=original):
                 self.assertEqual(short_team_names(original, 'Premier League'), abbreviation)
                 for competition in ['Champions League', 'Europa League', 'Copa del Rey', None]:
-                    expected = 'Man. UD' if original == 'Manchester United' else ('Bournemouth' if original == 'AFC Bournemouth' and competition in ['Champions League', 'Europa League'] else original)
+                    expected = 'Man. Ud' if original == 'Manchester United' else ('Bournemouth' if original == 'AFC Bournemouth' and competition in ['Champions League', 'Europa League'] else original)
                     self.assertEqual(short_team_names(original, competition), expected)
         item = self.fixture(0, 'Premier League')
         item['summary'] = 'Manchester City - Brighton & Hove Albion FC'
@@ -139,7 +139,7 @@ class AdditionalDisplayNameTests(unittest.TestCase):
 
     def test_competition_specific_names(self):
         self.assertEqual(short_team_names('Manchester United', 'Premier League'), 'MUN')
-        self.assertEqual(short_team_names('Manchester United', 'Europa League'), 'Man. UD')
+        self.assertEqual(short_team_names('Manchester United', 'Europa League'), 'Man. Ud')
         self.assertEqual(short_team_names('AFC Bournemouth', 'Premier League'), 'BOU')
         self.assertEqual(short_team_names('AFC Bournemouth', 'Europa League'), 'Bournemouth')
         self.assertEqual(short_team_names('AFC Bournemouth', 'Copa del Rey'), 'AFC Bournemouth')
