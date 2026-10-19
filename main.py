@@ -203,6 +203,12 @@ def annotate_competitions(entries, references):
 
 # Presentation aliases only: matching and UID generation keep provider names.
 TEAM_DISPLAY_NAMES = {
+    "S.S. Lazio": "Lazio",
+    "Atlético Mineiro": "Mineiro", "Atletico Mineiro": "Mineiro",
+    "U.S. Sassuolo": "Sassuolo", "US Sassuolo": "Sassuolo",
+    "U.S. Sassuolo Calcio": "Sassuolo",
+    "SC Freiburg": "Friburgo", "SC Friburgo": "Friburgo",
+    "Olympique Lyonnais": "Lyon", "Racing Club": "Racing",
     "AC Milan": "Milan",
     "Boca Juniors": "Boca",
     "Talleres Córdoba": "Talleres", "Talleres Cordoba": "Talleres",
@@ -254,6 +260,17 @@ def short_team_names(title, competition=None):
     names = dict(TEAM_DISPLAY_NAMES)
     if competition == "Premier League":
         names.update(PREMIER_DISPLAY_NAMES)
+    else:
+        names["Manchester United"] = "Man. UD"
+    european = competition in {"Champions League", "Europa League", "UEFA Conference League", "Conference League"}
+    if european:
+        names["AFC Bournemouth"] = "Bournemouth"
+    if competition == "LaLiga":
+        names["RC Deportivo"] = "Deportivo"
+    if competition == "Bundesliga" or european:
+        names["Eintracht Frankfurt"] = "Frankfurt"
+    if competition == "LaLiga" or european:
+        names["Real Betis"] = "Betis"
     # One pass, longest names first: avoid turning "Brentford FC" into "BRE FC".
     pattern = r"(?<!\w)(?:" + "|".join(
         re.escape(name) for name in sorted(names, key=len, reverse=True)) + r")(?!\w)"

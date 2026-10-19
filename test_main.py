@@ -44,7 +44,7 @@ class CompetitionTitleTests(unittest.TestCase):
     def test_readable_title_and_group_unchanged(self):
         fixture = self.fixture(0, 'Copa Sudamericana')
         fixture['summary'] = 'Atlético Mineiro - Torque [CS]'
-        self.assertEqual(display_title(fixture), 'Atlético Mineiro - Torque · Sudamericana')
+        self.assertEqual(display_title(fixture), 'Mineiro - Torque · Sudamericana')
         group = group_simultaneous([self.fixture(n) for n in range(4)])[0]
         self.assertEqual(display_title(group), 'Champions ×4')
 
@@ -101,7 +101,8 @@ class ExtendedNameTests(unittest.TestCase):
             with self.subTest(team=original):
                 self.assertEqual(short_team_names(original, 'Premier League'), abbreviation)
                 for competition in ['Champions League', 'Europa League', 'Copa del Rey', None]:
-                    self.assertEqual(short_team_names(original, competition), original)
+                    expected = 'Man. UD' if original == 'Manchester United' else ('Bournemouth' if original == 'AFC Bournemouth' and competition in ['Champions League', 'Europa League'] else original)
+                    self.assertEqual(short_team_names(original, competition), expected)
         item = self.fixture(0, 'Premier League')
         item['summary'] = 'Manchester City - Brighton & Hove Albion FC'
         self.assertEqual(display_title(item), 'MCI - BRI · Premier')
@@ -127,6 +128,28 @@ class ExtendedNameTests(unittest.TestCase):
             self.assertIn(expected, group['description'])
             self.assertIn(competition, group['group_identity'])
             self.assertEqual(entries[0]['summary'], 'Manchester City - Liverpool')
+
+class AdditionalDisplayNameTests(unittest.TestCase):
+    def test_global_names(self):
+        for original, short in [('SS Lazio', 'Lazio'), ('S.S. Lazio', 'Lazio'),
+                                ('Atlético Mineiro', 'Mineiro'), ('U.S. Sassuolo', 'Sassuolo'),
+                                ('SC Freiburg', 'Friburgo'), ('Olympique Lyonnais', 'Lyon'),
+                                ('Racing Club', 'Racing')]:
+            self.assertEqual(short_team_names(original, 'Serie A'), short)
+
+    def test_competition_specific_names(self):
+        self.assertEqual(short_team_names('Manchester United', 'Premier League'), 'MUN')
+        self.assertEqual(short_team_names('Manchester United', 'Europa League'), 'Man. UD')
+        self.assertEqual(short_team_names('AFC Bournemouth', 'Premier League'), 'BOU')
+        self.assertEqual(short_team_names('AFC Bournemouth', 'Europa League'), 'Bournemouth')
+        self.assertEqual(short_team_names('AFC Bournemouth', 'Copa del Rey'), 'AFC Bournemouth')
+        self.assertEqual(short_team_names('RC Deportivo', 'LaLiga'), 'Deportivo')
+        self.assertEqual(short_team_names('RC Deportivo', 'Copa del Rey'), 'RC Deportivo')
+        for competition in ['Bundesliga', 'Champions League', 'Europa League']:
+            self.assertEqual(short_team_names('Eintracht Frankfurt', competition), 'Frankfurt')
+        for competition in ['LaLiga', 'Champions League', 'Europa League']:
+            self.assertEqual(short_team_names('Real Betis', competition), 'Betis')
+        self.assertEqual(short_team_names('Real Betis', 'Copa del Rey'), 'Real Betis')
 
 class IncompleteFixtureTests(unittest.TestCase):
     def test_provider_placeholders_are_excluded_before_grouping(self):
