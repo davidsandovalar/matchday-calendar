@@ -1,8 +1,12 @@
 import unittest
+import threading
+import socket
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import requests
 from unittest.mock import patch, Mock
 from icalendar import Calendar, Event
 from datetime import datetime, timedelta, timezone
-from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries, short_team_names, PREMIER_DISPLAY_NAMES
+from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries, short_team_names, PREMIER_DISPLAY_NAMES, make_session
 
 class CalendarTests(unittest.TestCase):
     def fixture(self, n, competition='Champions League', hour=19):
@@ -140,5 +144,52 @@ class IncompleteFixtureTests(unittest.TestCase):
         self.assertEqual([e['summary'] for e in entries], ['Sarmiento - River Plate'])
         self.assertEqual(len(group_simultaneous(entries)), 1)
         self.assertNotIn('group_identity', group_simultaneous(entries)[0])
+
+class DownloadRetryTests(unittest.TestCase):
+    def run_server(self, mode):
+        class Handler(BaseHTTPRequestHandler):
+            calls = 0
+            def log_message(self, *args):
+                pass
+            def do_GET(self):
+                type(self).calls += 1
+                if mode == 'recover' and self.calls == 1:
+                    self.connection.shutdown(socket.SHUT_RDWR)
+                    self.connection.close()
+                    return
+                status = 503 if mode == 'fail' or (mode == 'recover' and self.calls == 2) else 200
+                if mode == 'missing':
+                    status = 404
+                self.send_response(status)
+                self.end_headers()
+                self.wfile.write(b'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n')
+        server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        return f'http://127.0.0.1:{server.server_port}/feed.ics', Handler
+
+    def test_recovers_from_closed_connection_and_503(self):
+        url, handler = self.run_server('recover')
+        with make_session(backoff_factor=0) as session:
+            response = session.get(url, timeout=2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(handler.calls, 3)
+        self.assertTrue(response.content.startswith(b'BEGIN:VCALENDAR'))
+
+    def test_persistent_failure_still_raises(self):
+        url, handler = self.run_server('fail')
+        with make_session(backoff_factor=0) as session:
+            with self.assertRaises(requests.RequestException):
+                session.get(url, timeout=2)
+        self.assertEqual(handler.calls, 4)
+
+    def test_permanent_404_not_retried(self):
+        url, handler = self.run_server('missing')
+        with make_session(backoff_factor=0) as session:
+            response = session.get(url, timeout=2)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(handler.calls, 1)
 
 if __name__=='__main__':unittest.main()

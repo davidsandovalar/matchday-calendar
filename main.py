@@ -10,14 +10,28 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 LOG = logging.getLogger("matchday")
 USER_AGENT = "MatchdayCalendar/1.0 (personal fixture subscriber)"
-SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": USER_AGENT})
+def make_session(backoff_factor=1):
+    """Retry transient GET failures; permanent failures still block publication."""
+    session = requests.Session()
+    retry = Retry(total=3, connect=3, read=3, status=3,
+                  backoff_factor=backoff_factor, allowed_methods={"GET"},
+                  status_forcelist=(429, 500, 502, 503, 504))
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    session.headers.update({"User-Agent": USER_AGENT})
+    return session
+
+
+SESSION = make_session()
 
 ALIASES = {
     "barcelona": "barcelona", "barca": "barcelona", "f c barcelona": "barcelona",
