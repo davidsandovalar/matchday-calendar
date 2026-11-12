@@ -151,7 +151,7 @@ class AdditionalDisplayNameTests(unittest.TestCase):
             self.assertEqual(short_team_names('Eintracht Frankfurt', competition), 'Frankfurt')
         for competition in ['LaLiga', 'Champions League', 'Europa League']:
             self.assertEqual(short_team_names('Real Betis', competition), 'Betis')
-        self.assertEqual(short_team_names('Real Betis', 'Copa del Rey'), 'Real Betis')
+        self.assertEqual(short_team_names('Real Betis', 'Copa del Rey'), 'Betis')
 
 class IncompleteFixtureTests(unittest.TestCase):
     def test_provider_placeholders_are_excluded_before_grouping(self):
@@ -197,6 +197,23 @@ class NationalTeamTests(unittest.TestCase):
         chosen, duplicates = merge(entries + [duplicate])
         self.assertEqual(len(chosen), 2)
         self.assertEqual(duplicates, 1)
+
+class UpdatedDisplayTests(unittest.TestCase):
+    def test_global_betis_navalcarnero_and_current_equidad_name(self):
+        for competition in ['LaLiga', 'Copa del Rey', 'Champions League', None]:
+            self.assertEqual(short_team_names('Real Betis - CDA Navalcarnero', competition),
+                             'Betis - Navalcarnero')
+        self.assertEqual(short_team_names('La Equidad - Santa Fe', 'Liga Colombia'),
+                         'Internacional de Bogotá - Santa Fe')
+        self.assertEqual(teams('La Equidad - Santa Fe'), teams('Internacional de Bogotá - Santa Fe'))
+
+    def test_friendlies_title_and_group_use_short_label(self):
+        fixture = CalendarTests.fixture(self, 0, 'Amistoso de selecciones')
+        fixture['summary'] = 'Colombia - Chile [Friendlies]'
+        self.assertEqual(display_title(fixture), 'COL - CHI · Amistoso')
+        group = group_simultaneous([CalendarTests.fixture(self, n, 'Amistoso de selecciones') for n in range(4)])[0]
+        self.assertEqual(display_title(group), 'Amistoso ×4')
+        self.assertIn('Amistoso de selecciones', group['group_identity'])
 
 class NationalCodeTests(unittest.TestCase):
     def test_all_followed_nations_have_three_letter_codes(self):

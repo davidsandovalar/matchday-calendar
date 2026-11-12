@@ -34,6 +34,7 @@ def make_session(backoff_factor=1):
 SESSION = make_session()
 
 ALIASES = {
+    "internacional de bogota": "la equidad",
     "barcelona": "barcelona", "barca": "barcelona", "f c barcelona": "barcelona",
     "atletico madrid": "atletico madrid", "atletico de madrid": "atletico madrid",
     "real betis seville": "real betis", "real betis sevilla": "real betis",
@@ -203,6 +204,9 @@ def annotate_competitions(entries, references):
 
 # Presentation aliases only: matching and UID generation keep provider names.
 TEAM_DISPLAY_NAMES = {
+    "Real Betis": "Betis",
+    "CDA Navalcarnero": "Navalcarnero",
+    "La Equidad": "Internacional de Bogotá",
     "S.S. Lazio": "Lazio",
     "Atlético Mineiro": "Mineiro", "Atletico Mineiro": "Mineiro",
     "U.S. Sassuolo": "Sassuolo", "US Sassuolo": "Sassuolo",
@@ -247,6 +251,7 @@ PREMIER_DISPLAY_NAMES = {
     "Sunderland": "SUN",
 }
 COMPETITION_DISPLAY_NAMES = {
+    "Amistoso de selecciones": "Amistoso",
     "Champions League": "Champions",
     "Premier League": "Premier",
     "Liga Colombia": "FPC",
@@ -292,8 +297,6 @@ def short_team_names(title, competition=None):
         names["RC Deportivo"] = "Deportivo"
     if competition == "Bundesliga" or european:
         names["Eintracht Frankfurt"] = "Frankfurt"
-    if competition == "LaLiga" or european:
-        names["Real Betis"] = "Betis"
     # One pass, longest names first: avoid turning "Brentford FC" into "BRE FC".
     pattern = r"(?<!\w)(?:" + "|".join(
         re.escape(name) for name in sorted(names, key=len, reverse=True)) + r")(?!\w)"
