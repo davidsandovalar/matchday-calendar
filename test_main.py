@@ -1,4 +1,6 @@
 import unittest
+import json
+from pathlib import Path
 import threading
 import socket
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -167,6 +169,34 @@ class IncompleteFixtureTests(unittest.TestCase):
         self.assertEqual([e['summary'] for e in entries], ['Sarmiento - River Plate'])
         self.assertEqual(len(group_simultaneous(entries)), 1)
         self.assertNotIn('group_identity', group_simultaneous(entries)[0])
+
+class NationalTeamTests(unittest.TestCase):
+    def test_all_40_teams_configured_and_nations_only_reference(self):
+        sources = json.loads(Path('sources.json').read_text())
+        national = [f for f in sources['feeds'] if f.get('national_team')]
+        self.assertEqual(len({f['national_team'] for f in national}), 40)
+        self.assertTrue(all(f['only_team'] == f['national_team'] for f in national))
+        self.assertFalse(any('/league/nations-league.ics' in f['url'] for f in sources['feeds']))
+        self.assertTrue(any('/league/nations-league.ics' in f['url'] for f in sources['competition_references']))
+        self.assertEqual({f['competition'] for f in national if f['national_team'] == 'Morocco'},
+                         {'Amistoso de selecciones', 'Eliminatorias del Mundial', 'Copa de África'})
+
+    def test_team_filter_excludes_other_nations(self):
+        cal = Calendar()
+        for title in ['Morocco - Ghana [Friendlies]', 'Ghana - Nigeria [Friendlies]',
+                      'Mali - Morocco [Friendlies]']:
+            event = Event()
+            event.add('summary', title)
+            event.add('dtstart', datetime(2026, 11, 14, 18, tzinfo=timezone.utc))
+            cal.add_component(event)
+        with patch('main.read_calendar_url', return_value='https://example.test/feed.ics'), \
+             patch('main.SESSION.get', return_value=Mock(content=cal.to_ical())):
+            entries = get_entries('https://example.test/feed.ics', 'Amistoso de selecciones', 'Morocco')
+        self.assertEqual(len(entries), 2)
+        duplicate = dict(entries[0], source='other national team feed')
+        chosen, duplicates = merge(entries + [duplicate])
+        self.assertEqual(len(chosen), 2)
+        self.assertEqual(duplicates, 1)
 
 class DownloadRetryTests(unittest.TestCase):
     def run_server(self, mode):

@@ -120,7 +120,217 @@
       "url": "https://ics.fixtur.es/v2/inter-miami-cf.ics"
     },
     {
-      "url": "https://ics.fixtur.es/v2/co.ics"
+      "url": "https://ics.fixtur.es/v2/tr.ics",
+      "only_team": "Türkiye",
+      "national_team": "Türkiye"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/be.ics",
+      "only_team": "Belgium",
+      "national_team": "Belgium"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/gb-eng.ics",
+      "only_team": "England",
+      "national_team": "England"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/hr.ics",
+      "only_team": "Croatia",
+      "national_team": "Croatia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/cz.ics",
+      "only_team": "Czech Republic",
+      "national_team": "Czech Republic"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/es.ics",
+      "only_team": "Spain",
+      "national_team": "Spain"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/it.ics",
+      "only_team": "Italy",
+      "national_team": "Italy"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/fr.ics",
+      "only_team": "France",
+      "national_team": "France"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ch.ics",
+      "only_team": "Switzerland",
+      "national_team": "Switzerland"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/si.ics",
+      "only_team": "Slovenia",
+      "national_team": "Slovenia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/gb-sct.ics",
+      "only_team": "Scotland",
+      "national_team": "Scotland"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/rs.ics",
+      "only_team": "Serbia",
+      "national_team": "Serbia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/de.ics",
+      "only_team": "Germany",
+      "national_team": "Germany"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/nl.ics",
+      "only_team": "Netherlands",
+      "national_team": "Netherlands"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/gr.ics",
+      "only_team": "Greece",
+      "national_team": "Greece"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ar.ics",
+      "only_team": "Argentina",
+      "national_team": "Argentina"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/uy.ics",
+      "only_team": "Uruguay",
+      "national_team": "Uruguay"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/co.ics",
+      "only_team": "Colombia",
+      "national_team": "Colombia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/cl.ics",
+      "only_team": "Chile",
+      "national_team": "Chile"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ec.ics",
+      "only_team": "Ecuador",
+      "national_team": "Ecuador"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/pe.ics",
+      "only_team": "Peru",
+      "national_team": "Peru"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/bo.ics",
+      "only_team": "Bolivia",
+      "national_team": "Bolivia"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/mx.ics",
+      "only_team": "Mexico",
+      "national_team": "Mexico"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/us.ics",
+      "only_team": "United States",
+      "national_team": "United States"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ca.ics",
+      "only_team": "Canada",
+      "national_team": "Canada"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/jp.ics",
+      "only_team": "Japan",
+      "national_team": "Japan"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/br.ics",
+      "only_team": "Brazil",
+      "national_team": "Brazil"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/hu.ics",
+      "only_team": "Hungary",
+      "national_team": "Hungary"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/no.ics",
+      "only_team": "Norway",
+      "national_team": "Norway"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/gb-wls.ics",
+      "only_team": "Wales",
+      "national_team": "Wales"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/se.ics",
+      "only_team": "Sweden",
+      "national_team": "Sweden"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ba.ics",
+      "only_team": "Bosnia and Herzegovina",
+      "national_team": "Bosnia and Herzegovina"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/pl.ics",
+      "only_team": "Poland",
+      "national_team": "Poland"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/at.ics",
+      "only_team": "Austria",
+      "national_team": "Austria"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ie.ics",
+      "only_team": "Ireland",
+      "national_team": "Ireland"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/gb-nir.ics",
+      "only_team": "Northern Ireland",
+      "national_team": "Northern Ireland"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/ua.ics",
+      "only_team": "Ukraine",
+      "national_team": "Ukraine"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/pt.ics",
+      "only_team": "Portugal",
+      "national_team": "Portugal"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/dk.ics",
+      "only_team": "Denmark",
+      "national_team": "Denmark"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/oefen-interlands.ics",
+      "only_team": "Morocco",
+      "national_team": "Morocco",
+      "competition": "Amistoso de selecciones"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/world-cup-qualifiers.ics",
+      "only_team": "Morocco",
+      "national_team": "Morocco",
+      "competition": "Eliminatorias del Mundial"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/africa-cup-of-nations.ics",
+      "only_team": "Morocco",
+      "national_team": "Morocco",
+      "competition": "Copa de África"
     }
   ],
   "europe_teams": [
@@ -272,6 +482,26 @@
     {
       "url": "https://ics.fixtur.es/v2/league/supercopa-de-espana.ics",
       "competition": "Supercopa de España"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/nations-league.ics",
+      "competition": "Nations League"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/world-cup-qualifiers.ics",
+      "competition": "Eliminatorias del Mundial"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/africa-cup-of-nations.ics",
+      "competition": "Copa de África"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/concacaf-nations-league.ics",
+      "competition": "Nations League Concacaf"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/afc-asian-cup.ics",
+      "competition": "Copa Asiática"
     }
   ]
 }
