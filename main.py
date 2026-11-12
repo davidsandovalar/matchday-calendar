@@ -241,8 +241,8 @@ PREMIER_DISPLAY_NAMES = {
     "Arsenal": "ARS", "Aston Villa": "AVL",
     "AFC Bournemouth": "BOU", "Bournemouth": "BOU",
     "Brentford FC": "BRE", "Brentford": "BRE",
-    "Brighton & Hove Albion FC": "BRI", "Brighton & Hove Albion": "BRI",
-    "Brighton and Hove Albion": "BRI", "Chelsea": "CHE",
+    "Brighton & Hove Albion FC": "BHA", "Brighton & Hove Albion": "BHA",
+    "Brighton and Hove Albion": "BHA", "Chelsea": "CHE",
     "Crystal Palace": "CRY", "Everton": "EVE", "Fulham": "FUL",
     "Liverpool": "LIV", "Manchester City": "MCI", "Manchester United": "MUN",
     "Newcastle United": "NEW", "Nottingham Forest": "NFO",
@@ -250,6 +250,8 @@ PREMIER_DISPLAY_NAMES = {
     "Leeds United": "LEE", "Ipswich Town": "IPS", "Ipswitch Town": "IPS",
     "Sunderland": "SUN",
 }
+# Additional official Fantasy Premier League name variants.
+PREMIER_DISPLAY_NAMES.update({'Brighton': 'BHA', 'Leeds': 'LEE', 'Man City': 'MCI', 'Man Utd': 'MUN', 'Newcastle': 'NEW', "Nott'm Forest": 'NFO', 'Spurs': 'TOT'})
 COMPETITION_DISPLAY_NAMES = {
     "Amistoso de selecciones": "Amistoso",
     "Champions League": "Champions",
@@ -295,6 +297,9 @@ def short_team_names(title, competition=None):
         names["AFC Bournemouth"] = "Bournemouth"
     if competition == "LaLiga":
         names["RC Deportivo"] = "Deportivo"
+    if competition == "Bundesliga":
+        for name in ["1.FC Köln", "1. FC Köln", "1.FC Koln", "1. FC Koln"]:
+            names[name] = "Köln"
     if competition == "Bundesliga" or european:
         names["Eintracht Frankfurt"] = "Frankfurt"
     # One pass, longest names first: avoid turning "Brentford FC" into "BRE FC".

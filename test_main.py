@@ -107,7 +107,7 @@ class ExtendedNameTests(unittest.TestCase):
                     self.assertEqual(short_team_names(original, competition), expected)
         item = self.fixture(0, 'Premier League')
         item['summary'] = 'Manchester City - Brighton & Hove Albion FC'
-        self.assertEqual(display_title(item), 'MCI - BRI · Premier')
+        self.assertEqual(display_title(item), 'MCI - BHA · Premier')
 
     def test_global_short_names(self):
         for original, short in [('AC Milan', 'Milan'), ('Boca Juniors', 'Boca'),
@@ -197,6 +197,22 @@ class NationalTeamTests(unittest.TestCase):
         chosen, duplicates = merge(entries + [duplicate])
         self.assertEqual(len(chosen), 2)
         self.assertEqual(duplicates, 1)
+
+class PremierAndKolnTests(unittest.TestCase):
+    def test_brighton_official_code_only_in_premier(self):
+        for name in ['Brighton', 'Brighton & Hove Albion', 'Brighton & Hove Albion FC',
+                     'Brighton and Hove Albion']:
+            self.assertEqual(short_team_names('Hull City - ' + name, 'Premier League'), 'HUL - BHA')
+            self.assertEqual(short_team_names(name, 'Europa League'), name)
+        entries = [CalendarTests.fixture(self, n, 'Premier League') for n in range(4)]
+        entries[0]['summary'] = 'Hull City - Brighton & Hove Albion FC'
+        self.assertIn('HUL - BHA', group_simultaneous(entries)[0]['description'])
+
+    def test_koln_only_bundesliga(self):
+        for name in ['1.FC Köln', '1. FC Köln', '1.FC Koln', '1. FC Koln']:
+            self.assertEqual(short_team_names(name, 'Bundesliga'), 'Köln')
+            self.assertEqual(short_team_names(name, 'Copa de Alemania'), name)
+            self.assertEqual(short_team_names(name, 'Europa League'), name)
 
 class UpdatedDisplayTests(unittest.TestCase):
     def test_global_betis_navalcarnero_and_current_equidad_name(self):
