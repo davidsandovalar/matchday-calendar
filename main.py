@@ -256,7 +256,30 @@ COMPETITION_DISPLAY_NAMES = {
 }
 
 
+NATIONAL_DISPLAY_CODES = json.loads(
+    Path(__file__).with_name("national_team_codes.json").read_text(encoding="utf-8"))["codes"]
+NATIONAL_NORMALIZED_CODES = {norm(name): code for name, code in NATIONAL_DISPLAY_CODES.items()}
+NATIONAL_CODE_PATTERN = re.compile(r"(?<!\w)(?:" + "|".join(
+    re.escape(name) for name in sorted(NATIONAL_DISPLAY_CODES, key=len, reverse=True)) + r")(?!\w)",
+    re.IGNORECASE)
+NATIONAL_CODE_LOOKUP = {name.casefold(): code for name, code in NATIONAL_DISPLAY_CODES.items()}
+
+
+def national_title(title):
+    candidate = re.sub(r"^(?:⚽\s*)?(?:⚠️?\s*)?(?:Postponed|Suspended|Cancelled|Canceled):\s*",
+                       "", title, flags=re.IGNORECASE)
+    matchup = teams(candidate)
+    # Require two whole country names; never abbreviate country words in clubs
+    # such as New England Revolution or Club Nacional de Football.
+    if not matchup or not all(name in NATIONAL_NORMALIZED_CODES for name in matchup):
+        return None
+    return NATIONAL_CODE_PATTERN.sub(lambda match: NATIONAL_CODE_LOOKUP[match.group().casefold()], title)
+
+
 def short_team_names(title, competition=None):
+    national = national_title(title)
+    if national is not None:
+        return national
     names = dict(TEAM_DISPLAY_NAMES)
     if competition == "Premier League":
         names.update(PREMIER_DISPLAY_NAMES)

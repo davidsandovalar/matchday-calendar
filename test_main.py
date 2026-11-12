@@ -8,7 +8,7 @@ import requests
 from unittest.mock import patch, Mock
 from icalendar import Calendar, Event
 from datetime import datetime, timedelta, timezone
-from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries, short_team_names, PREMIER_DISPLAY_NAMES, make_session
+from main import teams, merge, group_simultaneous, annotate_competitions, display_title, get_entries, short_team_names, PREMIER_DISPLAY_NAMES, make_session, NATIONAL_DISPLAY_CODES
 
 class CalendarTests(unittest.TestCase):
     def fixture(self, n, competition='Champions League', hour=19):
@@ -197,6 +197,34 @@ class NationalTeamTests(unittest.TestCase):
         chosen, duplicates = merge(entries + [duplicate])
         self.assertEqual(len(chosen), 2)
         self.assertEqual(duplicates, 1)
+
+class NationalCodeTests(unittest.TestCase):
+    def test_all_followed_nations_have_three_letter_codes(self):
+        sources = json.loads(Path('sources.json').read_text())
+        for name in {f['national_team'] for f in sources['feeds'] if f.get('national_team')}:
+            self.assertRegex(NATIONAL_DISPLAY_CODES[name], r'^[A-Z]{3}$')
+        for name, code in [('Netherlands', 'NED'), ('France', 'FRA'), ('Germany', 'GER'),
+                           ('Switzerland', 'SUI'), ('Morocco', 'MAR'), ('Slovenia', 'SVN'),
+                           ('Ireland', 'IRL'), ('Northern Ireland', 'NIR'), ('Türkiye', 'TUR')]:
+            self.assertEqual(NATIONAL_DISPLAY_CODES[name], code)
+
+    def test_both_opponents_and_status_scores(self):
+        self.assertEqual(short_team_names('Netherlands - France (2-1)', 'Nations League'), 'NED - FRA (2-1)')
+        self.assertEqual(short_team_names('Northern Ireland - Ireland'), 'NIR - IRL')
+        self.assertEqual(short_team_names('⚠️ Postponed: Morocco - Ghana [Friendlies]'),
+                         '⚠️ Postponed: MAR - GHA [Friendlies]')
+        self.assertEqual(short_team_names('Bosnia and Herzegovina - Türkiye'), 'BIH - TUR')
+        self.assertEqual(short_team_names('Guatemala - Canada'), 'GUA - CAN')
+
+    def test_club_names_unchanged_and_group_identity_preserved(self):
+        self.assertEqual(short_team_names('New England Revolution - Inter Miami CF', 'MLS'),
+                         'New England Revolution - Inter Miami')
+        entries = [CalendarTests.fixture(self, n, 'Nations League') for n in range(4)]
+        entries[0]['summary'] = 'Netherlands - France'
+        group = group_simultaneous(entries)[0]
+        self.assertIn('NED - FRA', group['description'])
+        self.assertEqual(group['summary'], 'Nations League ×4')
+        self.assertEqual(entries[0]['summary'], 'Netherlands - France')
 
 class DownloadRetryTests(unittest.TestCase):
     def run_server(self, mode):
