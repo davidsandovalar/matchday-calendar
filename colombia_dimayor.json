@@ -1,0 +1,133 @@
+{
+  "verified_on": "2026-11-20",
+  "fixtures": [
+    {
+      "round": 1,
+      "group": "A",
+      "start": "2026-11-20T16:30:00-05:00",
+      "home": "Independiente Medellín",
+      "away": "Santa Fe",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 1,
+      "group": "A",
+      "start": "2026-11-21T20:15:00-05:00",
+      "home": "Once Caldas",
+      "away": "Atlético Nacional",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 1,
+      "group": "B",
+      "start": "2026-11-20T18:35:00-05:00",
+      "home": "Bucaramanga",
+      "away": "América de Cali",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 1,
+      "group": "B",
+      "start": "2026-11-20T20:40:00-05:00",
+      "home": "Deportivo Cali",
+      "away": "Millonarios",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 2,
+      "group": "A",
+      "start": "2026-11-25T18:20:00-05:00",
+      "home": "Santa Fe",
+      "away": "Once Caldas",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 2,
+      "group": "A",
+      "start": "2026-11-25T20:30:00-05:00",
+      "home": "Atlético Nacional",
+      "away": "Independiente Medellín",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 2,
+      "group": "B",
+      "start": "2026-11-24T18:20:00-05:00",
+      "home": "Millonarios",
+      "away": "Bucaramanga",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 2,
+      "group": "B",
+      "start": "2026-11-24T20:30:00-05:00",
+      "home": "América de Cali",
+      "away": "Deportivo Cali",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V45_compressed.pdf"
+    },
+    {
+      "round": 3,
+      "group": "A",
+      "start": "2026-11-28T19:30:00-05:00",
+      "home": "Santa Fe",
+      "away": "Atlético Nacional",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 3,
+      "group": "A",
+      "start": "2026-11-29T18:30:00-05:00",
+      "home": "Independiente Medellín",
+      "away": "Once Caldas",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 3,
+      "group": "B",
+      "start": "2026-11-27T18:35:00-05:00",
+      "home": "Deportivo Cali",
+      "away": "Bucaramanga",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 3,
+      "group": "B",
+      "start": "2026-11-27T20:40:00-05:00",
+      "home": "Millonarios",
+      "away": "América de Cali",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 4,
+      "group": "A",
+      "start": "2026-12-02T18:20:00-05:00",
+      "home": "Once Caldas",
+      "away": "Independiente Medellín",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 4,
+      "group": "A",
+      "start": "2026-12-02T20:30:00-05:00",
+      "home": "Atlético Nacional",
+      "away": "Santa Fe",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 4,
+      "group": "B",
+      "start": "2026-12-01T18:20:00-05:00",
+      "home": "Bucaramanga",
+      "away": "Deportivo Cali",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    },
+    {
+      "round": 4,
+      "group": "B",
+      "start": "2026-12-01T20:30:00-05:00",
+      "home": "América de Cali",
+      "away": "Millonarios",
+      "source": "https://dimayor.com.co/wp-content/uploads/2026/11/PROG-CUAD-LIGA-BETPLAY-DIMAYOR-II-2026-V48.pdf"
+    }
+  ]
+}

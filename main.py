@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 import requests
+import colombia
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
@@ -34,6 +35,13 @@ def make_session(backoff_factor=1):
 SESSION = make_session()
 
 ALIASES = {
+    "atletico bucaramanga": "bucaramanga",
+    "aguilas doradas": "rionegro",
+    "alianza": "alianza petrolera",
+    "atletico junior": "junior",
+    "boyaca chico": "chico",
+    "jaguares de cordoba": "jaguares",
+    "medellin": "independiente medellin",
     "internacional de bogota": "la equidad",
     "barcelona": "barcelona", "barca": "barcelona", "f c barcelona": "barcelona",
     "atletico madrid": "atletico madrid", "atletico de madrid": "atletico madrid",
@@ -204,6 +212,8 @@ def annotate_competitions(entries, references):
 
 # Presentation aliases only: matching and UID generation keep provider names.
 TEAM_DISPLAY_NAMES = {
+    "Independiente Santa Fe": "Santa Fe",
+    "Atlético Bucaramanga": "Bucaramanga",
     "Real Betis": "Betis",
     "CDA Navalcarnero": "Navalcarnero",
     "La Equidad": "Internacional de Bogotá",
@@ -391,6 +401,9 @@ def build():
     if not all_entries:
         raise RuntimeError("No hay partidos recientes o futuros en los feeds")
     all_entries = annotate_competitions(all_entries, references)
+    if sources.get("colombia_live"):
+        live_colombia = colombia.get_entries(SESSION, norm, now=now)
+        all_entries = colombia.reconcile(all_entries, live_colombia)
     chosen, duplicates = merge(all_entries)
     LOG.info("Deduplicados: %s partidos únicos, %s duplicados", len(chosen), duplicates)
     fixture_count = len(chosen)
@@ -427,7 +440,7 @@ def build():
     Path("public").mkdir(exist_ok=True)
     Path("public/matchday.ics").write_bytes(cal.to_ical())
     Path("public/index.html").write_text('<!doctype html><meta charset="utf-8"><title>Matchday</title><h1>⚽ Matchday</h1><p><a href="matchday.ics">Calendario para Apple Calendar</a></p>', encoding="utf-8")
-    Path("public/status.json").write_text(json.dumps({"updated_utc": now.isoformat(), "sources": len(urls), "events": len(chosen), "fixtures": fixture_count, "groups": sum(bool(e.get("group_identity")) for e in chosen), "duplicates_removed": duplicates}, indent=2), encoding="utf-8")
+    Path("public/status.json").write_text(json.dumps({"updated_utc": now.isoformat(), "sources": len(urls) + int(bool(sources.get("colombia_live"))), "events": len(chosen), "fixtures": fixture_count, "groups": sum(bool(e.get("group_identity")) for e in chosen), "duplicates_removed": duplicates}, indent=2), encoding="utf-8")
     LOG.info("Hecho: %s partidos, %s duplicados eliminados", len(chosen), duplicates)
 
 if __name__ == "__main__":

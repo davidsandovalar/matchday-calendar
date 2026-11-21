@@ -331,6 +331,10 @@
       "only_team": "Morocco",
       "national_team": "Morocco",
       "competition": "Copa de África"
+    },
+    {
+      "url": "https://ics.fixtur.es/v2/league/primera-a.ics",
+      "competition": "Liga Colombia"
     }
   ],
   "europe_teams": [
@@ -503,5 +507,6 @@
       "url": "https://ics.fixtur.es/v2/league/afc-asian-cup.ics",
       "competition": "Copa Asiática"
     }
-  ]
+  ],
+  "colombia_live": true
 }
