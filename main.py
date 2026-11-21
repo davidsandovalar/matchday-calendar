@@ -212,6 +212,15 @@ def annotate_competitions(entries, references):
 
 # Presentation aliases only: matching and UID generation keep provider names.
 TEAM_DISPLAY_NAMES = {
+    "Independiente Medellín": "DIM", "Independiente Medellin": "DIM",
+    "América de Cali": "América", "America de Cali": "América",
+    "Deportivo Cali": "Cali",
+    "Atlético Nacional": "Nacional", "Atletico Nacional": "Nacional",
+    "Celta de Vigo": "Celta", "Sporting Portugal": "Sporting",
+    "OGC Nice": "Niza", "OGC Niza": "Niza",
+    "Borussia Mönchengladbach": "Mönchengladbach",
+    "Borussia Monchengladbach": "Mönchengladbach",
+    "Barcelona": "Barça",
     "Independiente Santa Fe": "Santa Fe",
     "Atlético Bucaramanga": "Bucaramanga",
     "Real Betis": "Betis",
@@ -241,7 +250,7 @@ TEAM_DISPLAY_NAMES = {
     "Inter Miami CF": "Inter Miami",
     "New York City FC": "New York City",
     "LASK Linz": "LASK",
-    "FC Barcelona": "Barcelona",
+    "FC Barcelona": "Barça",
     "Atlanta United FC": "Atlanta United",
     "RC Strasbourg": "Strasbourg",
     "Paris Saint-Germain": "PSG",
@@ -263,6 +272,7 @@ PREMIER_DISPLAY_NAMES = {
 # Additional official Fantasy Premier League name variants.
 PREMIER_DISPLAY_NAMES.update({'Brighton': 'BHA', 'Leeds': 'LEE', 'Man City': 'MCI', 'Man Utd': 'MUN', 'Newcastle': 'NEW', "Nott'm Forest": 'NFO', 'Spurs': 'TOT'})
 COMPETITION_DISPLAY_NAMES = {
+    "LaLiga": "La Liga",
     "Amistoso de selecciones": "Amistoso",
     "Champions League": "Champions",
     "Premier League": "Premier",

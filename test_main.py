@@ -73,7 +73,7 @@ class ShortNameTests(unittest.TestCase):
     def test_requested_names_and_original_identity(self):
         for original, short in [('Inter Miami CF', 'Inter Miami'),
                                 ('New York City FC', 'New York City'),
-                                ('LASK Linz', 'LASK'), ('FC Barcelona', 'Barcelona'),
+                                ('LASK Linz', 'LASK'), ('FC Barcelona', 'Barça'),
                                 ('Atlanta United FC', 'Atlanta United'),
                                 ('RC Strasbourg', 'Strasbourg'),
                                 ('Paris Saint-Germain', 'PSG')]:
@@ -91,7 +91,7 @@ class ShortNameTests(unittest.TestCase):
         entries = [self.fixture(n) for n in range(4)]
         entries[0]['summary'] = 'FC Barcelona - Paris Saint-Germain [CL]'
         group = group_simultaneous(entries)[0]
-        self.assertIn('Barcelona - PSG [CL]', group['description'])
+        self.assertIn('Barça - PSG [CL]', group['description'])
         self.assertEqual(display_title(group), 'Champions ×4')
         self.assertEqual(group['group_identity'], 'group|Champions League|' + group['start'].isoformat())
 
@@ -258,6 +258,29 @@ class NationalCodeTests(unittest.TestCase):
         self.assertIn('NED - FRA', group['description'])
         self.assertEqual(group['summary'], 'Nations League ×4')
         self.assertEqual(entries[0]['summary'], 'Netherlands - France')
+
+class LatestClubNameTests(unittest.TestCase):
+    def test_new_names_across_competitions(self):
+        aliases = [('Independiente Medellín', 'DIM'), ('América de Cali', 'América'),
+                   ('Deportivo Cali', 'Cali'), ('Atlético Nacional', 'Nacional'),
+                   ('Celta de Vigo', 'Celta'), ('Sporting Portugal', 'Sporting'),
+                   ('OGC Nice', 'Niza'), ('OGC Niza', 'Niza'),
+                   ('Borussia Mönchengladbach', 'Mönchengladbach'),
+                   ('FC Barcelona', 'Barça'), ('Barcelona', 'Barça')]
+        for competition in ['Liga Colombia', 'Copa Colombia', 'Champions League', 'LaLiga']:
+            for original, short in aliases:
+                with self.subTest(team=original, competition=competition):
+                    self.assertEqual(short_team_names(original, competition), short)
+        item = CalendarTests.fixture(self, 0, 'LaLiga')
+        item['summary'] = 'FC Barcelona - Celta de Vigo'
+        self.assertEqual(display_title(item), 'Barça - Celta · La Liga')
+        self.assertEqual(item['summary'], 'FC Barcelona - Celta de Vigo')
+        entries = [CalendarTests.fixture(self, n, 'LaLiga') for n in range(4)]
+        entries[0]['summary'] = item['summary']
+        group = group_simultaneous(entries)[0]
+        self.assertEqual(display_title(group), 'La Liga ×4')
+        self.assertIn('Barça - Celta', group['description'])
+        self.assertIn('LaLiga', group['group_identity'])
 
 class DownloadRetryTests(unittest.TestCase):
     def run_server(self, mode):
